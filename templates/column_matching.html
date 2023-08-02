@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Column Matching</title>
+    <link rel="icon" href="https://th.bing.com/th/id/OIP.2xjsEUikb32_0Lzh0hT_WwAAAA?pid=ImgDet&rs=1">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Set the favicon and include a stylesheet for styling. The stylesheet is generated dynamically using Flask's `url_for` function. -->
+    <style>
+        .section-header {
+            cursor: pointer;
+            user-select: none;
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+        <!-- Define the styling for the section headers. -->
+        .section-body {
+            display: none;
+            padding: 10px;
+        }
+        <!-- Hide the section bodies by default. -->
+        .section-expanded .section-body {
+            display: block;
+        }
+        <!-- Display the section body when the section is expanded. -->
+        .toggle-icon {
+            transition: transform 0.3s;
+        }
+        <!-- Define the transition effect for the toggle icons. -->
+        .toggle-icon.rotated {
+            transform: rotate(90deg);
+        }
+        <!-- Rotate the toggle icon when the section is expanded. -->
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Include Font Awesome CSS for using icons. -->
+</head>
+<body>
+    <div class="container">
+        <div class="header-container">
+            <h1 class="header-title">Column Matching</h1>
+        </div>
+        <!-- Display the main header of the page. -->
+        {% if all_matched %}
+            <p>All headers matched successfully!</p>
+            <p><a href="{{ url_for('download_organized_data') }}">Download Organized Data</a></p>
+        {% else %}
+            <!-- Check if all headers are matched. If not, display the column matching form. -->
+            <p>Match the specified headers with the file headers:</p>
+            <form method="post" action="{{ url_for('column_matching') }}" enctype="multipart/form-data">
+                <!-- Create a form that posts to the 'column_matching' route. -->
+                <div class="section-header">Mandatory Fields <i class="toggle-icon fas fa-chevron-right"></i></div>
+                <!-- Display the header for the mandatory fields section. -->
+                <div class="section-body">
+                    <!-- Show the body of the mandatory fields section. -->
+                    <H4>For the Country Field, Region Field, and Address Field: Please either match a field from the document or select Use longitude/latitude from the drop-down and fill in the Longitude and Latitude fields above.</H4>
+                    <!-- Display a helpful instruction for the mandatory fields. -->
+                    {% for specified_header in mandatory_headers %}
+                        <!-- Loop through each specified mandatory header. -->
+                        <label for="{{ specified_header }}">{{ specified_header }}:</label>
+                        <!-- Display the specified mandatory header. -->
+                        <select id="{{ specified_header }}" name="{{ specified_header }}">
+                            <!-- Create a dropdown menu for selecting the matching column. -->
+                            <option value="">Select a column</option>
+                            <!-- Add an option for selecting no column. -->
+                            {% for file_header in file_headers %}
+                                <!-- Loop through each file header. -->
+                                <option value="{{ file_header }}">{{ file_header }}</option>
+                                <!-- Add an option for each file header to be selected as a match. -->
+                            {% endfor %}
+                            {% if specified_header == 'Country' or specified_header == 'Region' or specified_header == 'Address' %}
+                                <option value="latitude_longitude">Use Latitude/Longitude</option>
+                                <!-- Add an option for selecting Latitude/Longitude as a match for the Country field. -->
+                            {% endif %}
+                        </select>
+                        <br><br>
+                        <!-- Add spacing between dropdowns. -->
+                    {% endfor %}
+                </div>
+
+                <div class="section-header">Optional Fields <i class="toggle-icon fas fa-chevron-right"></i></div>
+                <!-- Display the header for the optional fields section. -->
+                <div class="section-body">
+                    <!-- Show the body of the optional fields section. -->
+                    {% for specified_header in optional_headers %}
+                        <!-- Loop through each specified optional header. -->
+                        <label for="{{ specified_header }}">{{ specified_header }}:</label>
+                        <!-- Display the specified optional header. -->
+                        <select id="{{ specified_header }}" name="{{ specified_header }}">
+                            <!-- Create a dropdown menu for selecting the matching column. -->
+                            <option value="">Select a column</option>
+                            <!-- Add an option for selecting no column. -->
+                            {% for file_header in file_headers %}
+                                <!-- Loop through each file header. -->
+                                <option value="{{ file_header }}">{{ file_header }}</option>
+                                <!-- Add an option for each file header to be selected as a match. -->
+                            {% endfor %}
+                        </select>
+                        <br><br>
+                        <!-- Add spacing between dropdowns. -->
+                    {% endfor %}
+                </div>
+
+                <div class="section-header">Public Contact Information <i class="toggle-icon fas fa-chevron-right"></i></div>
+                <!-- Display the header for the public contact information section. -->
+                <div class="section-body">
+                    <!-- Show the body of the public contact information section. -->
+                    {% for specified_header in public_contact_information %}
+                        <!-- Loop through each specified public contact information header. -->
+                        <label for="{{ specified_header }}">{{ specified_header }}:</label>
+                        <!-- Display the specified public contact information header. -->
+                        <select id="{{ specified_header }}" name="{{ specified_header }}">
+                            <!-- Create a dropdown menu for selecting the matching column. -->
+                            <option value="">Select a column</option>
+                            <!-- Add an option for selecting no column. -->
+                            {% for file_header in file_headers %}
+                                <!-- Loop through each file header. -->
+                                <option value="{{ file_header }}">{{ file_header }}</option>
+                                <!-- Add an option for each file header to be selected as a match. -->
+                            {% endfor %}
+                        </select>
+                        <br><br>
+                        <!-- Add spacing between dropdowns. -->
+                    {% endfor %}
+                </div>
+
+                <div class="section-header">Primary Focal Point <i class="toggle-icon fas fa-chevron-right"></i></div>
+                <!-- Display the header for the primary focal point section. -->
+                <div class="section-body">
+                    <!-- Show the body of the primary focal point section. -->
+                    {% for specified_header in focal_point %}
+                        <!-- Loop through each specified primary focal point header. -->
+                        <label for="{{ specified_header }}">{{ specified_header }}:</label>
+                        <!-- Display the specified primary focal point header. -->
+                        <select id="{{ specified_header }}" name="{{ specified_header }}">
+                            <!-- Create a dropdown menu for selecting the matching column. -->
+                            <option value="">Select a column</option>
+                            <!-- Add an option for selecting no column. -->
+                            {% for file_header in file_headers %}
+                                <!-- Loop through each file header. -->
+                                <option value="{{ file_header }}">{{ file_header }}</option>
+                                <!-- Add an option for each file header to be selected as a match. -->
+                            {% endfor %}
+                        </select>
+                        <br><br>
+                        <!-- Add spacing between dropdowns. -->
+                    {% endfor %}
+                </div>
+
+                <input type="submit" value="Match Headers">
+                <!-- Add a submit button for users to match the headers. -->
+            </form>
+        {% endif %}
+    </div>
+    <!-- Close the container div. -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var sectionHeaders = document.querySelectorAll('.section-header');
+            <!-- Get all elements with the class "section-header". -->
+            sectionHeaders.forEach(function(header) {
+                header.addEventListener('click', function() {
+                    <!-- Add a click event listener to each section header. -->
+                    var sectionBody = this.nextElementSibling;
+                    <!-- Get the element next to the clicked section header (i.e., the section body). -->
+                    sectionBody.style.display = sectionBody.style.display === 'none' ? 'block' : 'none';
+                    <!-- Toggle the display property of the section body to show or hide it. -->
+                });
+            });
+        });
+        <!-- Add a DOMContentLoaded event listener to execute the following JavaScript after the page is fully loaded. -->
+    </script>
+</body>
+</html>
