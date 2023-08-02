@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Index</title>
+    <!-- Define the favicon (icon on top tab) for the web page -->
+    <link rel="icon" href="https://th.bing.com/th/id/OIP.2xjsEUikb32_0Lzh0hT_WwAAAA?pid=ImgDet&rs=1">
+    <!-- Link the external stylesheet (styles.css) for styling the HTML content -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Display the main heading of the web page -->
+        <h1>Welcome to the Data Upload Portal</h1>
+
+        {% with messages = get_flashed_messages() %}
+            <!-- Check if there are any flashed messages to display -->
+            {% if messages %}
+                <!-- Display the flashed messages in a div with class "flash-messages" -->
+                <div class="flash-messages">
+                    <!-- Loop through each flashed message and display them as paragraphs -->
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Create a form to upload files to the server -->
+        <form method="post" action="{{ url_for('index') }}" enctype="multipart/form-data">
+            <!-- Display a heading for selecting a file -->
+            <h3>Select a file to upload:</h3>
+            <!-- Create an input field for file selection with the name "file" -->
+            <input type="file" name="file">
+            <!-- Create a submit button to upload the selected file -->
+            <input type="submit" value="Upload File">
+        </form>
+    </div>
+</body>
+</html>
